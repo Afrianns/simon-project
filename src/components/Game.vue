@@ -1,5 +1,8 @@
 <script setup>
 import { ref, watch, onMounted, computed, reactive } from "vue";
+import Swal from "sweetalert2";
+
+let start = defineProps(["start"]);
 let items = reactive([
   { id: 1, color: "#ADE4DB", pattern: false },
   { id: 2, color: "#6DA9E4", pattern: false },
@@ -13,95 +16,125 @@ let items = reactive([
 
 let val = ref();
 let repeat = ref(2);
-let gap = ref(false);
 let patternID = ref([]);
-let res = ref(false);
-let start = defineProps(["start"]);
 let wrongStep = ref(false);
+let correctStep = ref(false);
+
+function randomPattern() {
+  for (let i = 0; i <= repeat.value - 1; i++) {
+    val.value = Math.ceil(Math.random() * items.length);
+    patternID.value.push(val.value);
+  }
+}
 
 function startGame() {
-  for (let i = 0; i <= repeat.value - 1; i++) {
+  console.log(patternID.value, patternID.value.length);
+  for (let i = 0; i <= patternID.value.length - 1; i++) {
     repeatTask(i);
   }
 }
 
-// const Toast = Swal.mixin({
-//   toast: true,
-//   position: 'top-end',
-//   showConfirmButton: false,
-//   timer: 3000,
-//   timerProgressBar: true,
-//   didOpen: (toast) => {
-//     toast.addEventListener('mouseenter', Swal.stopTimer)
-//     toast.addEventListener('mouseleave', Swal.resumeTimer)
-//   }
-// })
-
-// Toast.fire({
-//   icon: 'success',
-//   title: 'Signed in successfully'
-// })
-
 function repeatTask(i) {
   setTimeout(() => {
-    val.value = Math.ceil(Math.random() * items.length);
-    for (const item of items) {
-      item["pattern"] = false;
-    }
-    setTimeout(() => {
-      drawPatter(val.value);
-    }, 100);
-  }, 1200 * i);
+    drawPattern(i);
+  }, 2000 * i);
 }
 
-function drawPatter(patternId) {
+function drawPattern(i) {
   for (const item of items) {
-    if (patternId == item["id"]) {
-      item["pattern"] = true;
-    } else {
-      item["pattern"] = false;
-    }
+    item["pattern"] = false;
   }
-  patternID.value.push(val.value);
+  setTimeout(() => {
+    for (const item of items) {
+      if (patternID.value[i] == item["id"]) {
+        item["pattern"] = true;
+        return;
+      } else {
+        item["pattern"] = false;
+      }
+    }
+  }, 100);
 }
 
 let sorted = 0;
 
 function boxClick(id) {
-  patternID.value.forEach((a, b) => {
-    if (b == sorted) {
-      console.log(a == id, id, a);
-      if (a == id) {
+  for (const i in patternID.value) {
+    console.log(patternID.value[i], i, sorted);
+    if (i == sorted) {
+      console.log(patternID[i] == id);
+      if (patternID.value[i] == id) {
         sorted++;
+        correctStep.value = true;
+        delayAnim(correctStep);
+        console.log("break?", sorted, patternID.value.length);
+        if (sorted == patternID.value.length) {
+          sorted = 0;
+          randomPattern();
+          callStart();
+        }
       } else {
         wrongStep.value = true;
-        setTimeout(() => {
-          wrongStep.value = false;
-        }, 1000);
-        console.log("wrong step");
+        delayAnim(wrongStep);
+        wrongStepAlert();
       }
+      break;
     }
+  }
+}
+
+let delayAnim = (param) => {
+  setTimeout(() => {
+    param.value = false;
+  }, 1000);
+};
+
+function wrongStepAlert() {
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "bottom-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+  });
+
+  Toast.fire({
+    icon: "error",
+    title: "You Got Wrong Step. <br> Try Again!",
   });
 }
 
 if (start.start) {
+  randomPattern();
+  callStart();
+}
+
+function callStart() {
   setTimeout(() => {
     startGame();
   }, 2000);
 }
-
-console.log(start.start);
 </script>
 
 <template>
   {{ start.start }}{{ patternID }}
-  <div class="wrapper-menu" :class="{ red: wrongStep }">
+  <div
+    class="wrapper-menu"
+    :class="{
+      'wrong-step': wrongStep,
+      trans: startGame,
+      'correct-step': correctStep,
+    }"
+  >
     <TransitionGroup name="boxs">
       <div class="wrapper">
         <span
           v-for="item in items"
           :key="item.id"
-          :class="{ box: start.start, clicked: item['pattern'] }"
+          :class="{
+            box: start.start,
+            clicked: item['pattern'],
+          }"
           :style="{ background: item.color }"
           @click="boxClick(item.id)"
           >{{ item["pattern"] }}{{ item.id }}</span
@@ -112,14 +145,25 @@ console.log(start.start);
 </template>
 
 <style scoped>
-body {
-  background: red;
-}
-.red {
-  animation: wrongAnim 1s ease-in-out;
+.trans {
+  transition: sizeAnim 2s ease;
 }
 
-@keyframes wrongAnim {
+@keyframes sizeAnim {
+  0% {
+    height: inherit;
+  }
+  100% {
+    height: 100rem;
+  }
+}
+
+/* background color when wrong step */
+.wrong-step {
+  animation: wrong-step 1s ease-in-out;
+}
+
+@keyframes wrong-step {
   0% {
     background-color: inherit;
     border-color: var(--golden-light);
@@ -131,6 +175,29 @@ body {
   60% {
     background-color: #fff0f0;
     border-color: #ff3407;
+  }
+  100% {
+    border-color: var(--golden-light);
+    background-color: inherit;
+  }
+}
+/* background color when correct step */
+.correct-step {
+  animation: correct-step 1s ease-in-out;
+}
+
+@keyframes correct-step {
+  0% {
+    background-color: inherit;
+    border-color: var(--golden-light);
+  }
+  40% {
+    background-color: #f8fff0;
+    border-color: #07ff1c;
+  }
+  60% {
+    background-color: #f8fff0;
+    border-color: #07ff1c;
   }
   100% {
     border-color: var(--golden-light);
@@ -157,7 +224,7 @@ body {
 }
 
 .box:hover {
-  border: 4px solid orange;
+  box-shadow: 0 0 0 4px var(--primary-light), 0 0 0 8px var(--golden-light);
 }
 
 .clicked {
@@ -167,18 +234,22 @@ body {
 @keyframes clicked {
   0% {
     opacity: 1;
-    border: 0 solid salmon;
+    box-shadow: 0;
+    /* border: 0 solid salmon; */
   }
   20% {
     opacity: 0.7;
-    border: 4px solid salmon;
+    box-shadow: 0 0 0 4px var(--primary-light), 0 0 0 7px var(--golden);
+    /* border: 4px solid salmon; */
   }
   80% {
-    border: 4px solid salmon;
+    box-shadow: 0 0 0 4px var(--primary-light), 0 0 0 7px var(--golden);
+    /* border: 4px solid salmon; */
     opacity: 0.7;
   }
   100% {
-    border: 0 solid salmon;
+    box-shadow: 0;
+    /* border: 0 solid salmon; */
     opacity: 1;
   }
 }

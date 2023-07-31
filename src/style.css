@@ -24,6 +24,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: var(--sans-font);
 }
 
 #app{
@@ -37,7 +38,6 @@
 }
 
 .wrapper-menu {
-  transition: height .5s ease;
   background: var(--primary-light);
   border-radius: 10px;
   height: fit-content;
@@ -51,7 +51,7 @@
 
 .nav > *, .level {
   font-family: var(--sans-font);
-  font-weight: 900;
+  font-weight: 400;
   font-size: 0.75rem;
   padding: 0.65rem 1rem;
   border-radius: 6px;

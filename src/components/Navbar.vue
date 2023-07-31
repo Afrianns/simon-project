@@ -4,7 +4,7 @@
   <Transition mode="out-in">
     <div class="nav">
       <div class="healthbar">
-        <img src="../assets/icons/shield.svg" alt="" width="35" />
+        <img src="../assets/icons/shield.svg" alt="shield icon" width="35" />
         <div class="hp">
           <h2>HP</h2>
           <div class="bar">
@@ -16,11 +16,11 @@
         </div>
       </div>
       <div class="timer">
-        <h2>04.00</h2>
+        <h2>04:00</h2>
       </div>
       <div class="pause">
         <h2>Pause</h2>
-        <img src="../assets/icons/pause.svg" width="35" alt="" />
+        <img src="../assets/icons/pause.svg" width="35" alt="pause icon" />
       </div>
     </div>
   </Transition>
@@ -31,7 +31,6 @@
 .nav {
   position: absolute;
   top: 0;
-  /* font-family: var(--sans-font); */
   width: 100%;
   margin: 1rem 0;
   display: flex;
@@ -39,7 +38,7 @@
   align-items: center;
   color: var(--golden-dark-black);
 }
-/*  */
+
 .healthbar,
 .pause {
   display: flex;

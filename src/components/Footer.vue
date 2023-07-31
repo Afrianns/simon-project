@@ -1,10 +1,12 @@
 <script setup>
+import { ref } from "vue";
+let level = ref(1);
 </script>
 <template>
   <Transition>
     <footer>
       <div class="level">
-        <h2>Lvl.1</h2>
+        <h2>LEVEL. {{ level }}</h2>
       </div>
     </footer>
   </Transition>
