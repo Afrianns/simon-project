@@ -3,6 +3,8 @@ import { ref, watch, onMounted, computed, reactive } from "vue";
 import Swal from "sweetalert2";
 
 let start = defineProps(["start"]);
+let changeState = defineEmits(["wrongStep", "levelUp"]);
+
 let items = reactive([
   { id: 1, color: "#ADE4DB", pattern: false },
   { id: 2, color: "#6DA9E4", pattern: false },
@@ -19,6 +21,11 @@ let repeat = ref(2);
 let patternID = ref([]);
 let wrongStep = ref(false);
 let correctStep = ref(false);
+let healthNumber = ref(4);
+let level = ref(1);
+let isClickable = ref(false);
+
+let idx = ref("");
 
 function randomPattern() {
   for (let i = 0; i <= repeat.value - 1; i++) {
@@ -29,6 +36,7 @@ function randomPattern() {
 
 function startGame() {
   console.log(patternID.value, patternID.value.length);
+  isClickable.value = false;
   for (let i = 0; i <= patternID.value.length - 1; i++) {
     repeatTask(i);
   }
@@ -41,6 +49,11 @@ function repeatTask(i) {
 }
 
 function drawPattern(i) {
+  if (i >= patternID.value.length - 1) {
+    setTimeout(() => {
+      isClickable.value = true;
+    }, 1000);
+  }
   for (const item of items) {
     item["pattern"] = false;
   }
@@ -53,29 +66,35 @@ function drawPattern(i) {
         item["pattern"] = false;
       }
     }
-  }, 100);
+  }, 10);
 }
 
 let sorted = 0;
 
 function boxClick(id) {
+  if (healthNumber.value == 0 || !isClickable.value) {
+    return;
+  }
   for (const i in patternID.value) {
-    console.log(patternID.value[i], i, sorted);
     if (i == sorted) {
-      console.log(patternID[i] == id);
       if (patternID.value[i] == id) {
         sorted++;
         correctStep.value = true;
         delayAnim(correctStep);
-        console.log("break?", sorted, patternID.value.length);
+
         if (sorted == patternID.value.length) {
           sorted = 0;
+          level.value++;
+          changeState("levelUp", level.value);
           randomPattern();
           callStart();
         }
       } else {
         wrongStep.value = true;
+        healthNumber.value--;
+        changeState("wrongStep", healthNumber.value);
         delayAnim(wrongStep);
+
         wrongStepAlert();
       }
       break;
@@ -84,8 +103,9 @@ function boxClick(id) {
 }
 
 let delayAnim = (param) => {
-  setTimeout(() => {
+  idx.value = setTimeout(() => {
     param.value = false;
+    // idx.value = "";
   }, 1000);
 };
 
@@ -117,7 +137,6 @@ function callStart() {
 </script>
 
 <template>
-  {{ start.start }}{{ patternID }}
   <div
     class="wrapper-menu"
     :class="{
@@ -126,8 +145,9 @@ function callStart() {
       'correct-step': correctStep,
     }"
   >
-    <TransitionGroup name="boxs">
-      <div class="wrapper">
+    <Transition name="boxs">
+      <div class="wrapper" v-if="start.start">
+        <!-- {{ start.start }} -->
         <span
           v-for="item in items"
           :key="item.id"
@@ -136,11 +156,10 @@ function callStart() {
             clicked: item['pattern'],
           }"
           :style="{ background: item.color }"
-          @click="boxClick(item.id)"
-          >{{ item["pattern"] }}{{ item.id }}</span
-        >
+          @click.prevent="boxClick(item.id)"
+        ></span>
       </div>
-    </TransitionGroup>
+    </Transition>
   </div>
 </template>
 

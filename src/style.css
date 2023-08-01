@@ -8,7 +8,7 @@
   --golden-dark-black:#3F2305;
   --golden-light-bg: #F2EAD3;
   --golden: #E2BD4F;
-  --sans-font: 'Livvic', sans-serif;
+  --sans-font: 'Cabin', sans-serif;
 }
 
 @font-face {
@@ -35,9 +35,52 @@
   flex-direction: column;
   row-gap: 60px;
   margin: auto;
+  transition: all 1s ease;
+}
+
+.backdrop{
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: .5;
+  background-color:#F2EAD3;
+  /* width: 100px;
+  height: 100px; */
+}
+
+.list-menu {
+  font-family: var(--sans-font);
+  color: var(--golden-dark);
+  list-style: none;
+  text-align: center;
+  letter-spacing: 5px;
+  font-weight: 400;
+  width: fit-content;
+  margin: 2rem auto;
+}
+.list-menu li {
+  cursor: pointer;
+  margin: 2rem 0;
+}
+.list-menu li:hover {
+  margin: 2rem 0;
+  padding: 1rem;
+  display: inline;
+  width: fit-content;
+  color: var(--golden-dark);
+  background: #f3f3f3;
 }
 
 .wrapper-menu {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
   background: var(--primary-light);
   border-radius: 10px;
   height: fit-content;
@@ -51,7 +94,7 @@
 
 .nav > *, .level {
   font-family: var(--sans-font);
-  font-weight: 400;
+  font-weight: 900;
   font-size: 0.75rem;
   padding: 0.65rem 1rem;
   border-radius: 6px;
@@ -83,19 +126,11 @@
   opacity: 0;
 }
 
-.boxs-enter-from{
-  height: 200px;
-  opacity: 0;
-}
-.boxs-leave-to{
-  height: 0;
-  opacity: 0;
-}
 
 /* Transition Group */
 .boxs-enter-active,
 .boxs-leave-active {
-  transition: all 0.5s ease .5s;
+  transition: all 1s ease 1s;
 }
 .boxs-enter-from,
 .boxs-leave-to {

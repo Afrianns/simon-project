@@ -1,12 +1,12 @@
 <script setup>
 import { ref } from "vue";
-let level = ref(1);
+let level = defineProps(["level"]);
 </script>
 <template>
   <Transition>
     <footer>
       <div class="level">
-        <h2>LEVEL. {{ level }}</h2>
+        <h2>LEVEL. {{ level.level }}</h2>
       </div>
     </footer>
   </Transition>
