@@ -29,7 +29,7 @@ function changeSetting(id, val) {
 }
 
 function reset() {
-  SUMBOXS.value = 1;
+  SUMBOXS.value = 4;
   DURATIONS.value = 1;
   DIFFICULTY.value = 1;
   sendVal();
@@ -88,11 +88,10 @@ let sendVal = () => {
         <li @click="changeSetting(3, 3)" :class="{ active: DURATIONS == 3 }">
           3
         </li>
-        <li>+</li>
+        <!-- <li>+</li> -->
       </ul>
     </li>
   </ul>
-  <div class="value">{{ DIFFICULTY }} {{ SUMBOXS }} {{ DURATIONS }}</div>
   <div class="menu-wrapper">
     <p @click="reset()">RESET</p>
     <p @click="$emit('setting')">BACK</p>
