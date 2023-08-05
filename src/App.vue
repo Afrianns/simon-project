@@ -20,6 +20,8 @@ let DIFFICULTY = ref(1);
 let SUMBOXS = ref(4);
 let DURATIONS = ref(1);
 
+let sound = ref(true);
+
 let startGame = () => {
   isStart.value = !isStart.value;
 };
@@ -80,6 +82,10 @@ function setSetting(DIFF, BOXS, DUR) {
   DURATIONS.value = DUR;
   console.log(DIFF, BOXS);
 }
+
+function setSound(status) {
+  sound.value = status;
+}
 </script>
 
 <template>
@@ -108,7 +114,10 @@ function setSetting(DIFF, BOXS, DUR) {
         @pause="pauseGame"
         :resume="resume"
         :pause="pause"
+        @setSound="setSound"
         @timeout="timeout"
+        :duration="DURATIONS"
+        :sound="sound"
       />
     </div>
     <div
@@ -123,7 +132,7 @@ function setSetting(DIFF, BOXS, DUR) {
     </div>
     <div v-else-if="isSetting" class="navs-wrapper">
       <div class="title">
-        <h2 class="title-head">Welcome to my</h2>
+        <h2 class="title-head">Setting in my</h2>
         <h1 class="title-game">Simon Game</h1>
       </div>
     </div>
@@ -140,7 +149,9 @@ function setSetting(DIFF, BOXS, DUR) {
       <Game
         :start="isStart"
         :pause="pause"
+        :timeout="isTimeout"
         :SetValue="[DIFFICULTY, SUMBOXS]"
+        :sound="sound"
         @wrongStep="healthbar"
         @levelUp="levelUP"
       />
@@ -152,7 +163,7 @@ function setSetting(DIFF, BOXS, DUR) {
       <Setting
         @setting="setting"
         @settingVal="setSetting"
-        :value="[DIFFICULTY, SUMBOXS]"
+        :value="[DIFFICULTY, SUMBOXS, DURATIONS]"
       />
     </div>
   </Trasition>
@@ -165,7 +176,6 @@ function setSetting(DIFF, BOXS, DUR) {
 }
 .navs-wrapper {
   top: 10%;
-  /* margin: 1rem 0; */
   text-align: center;
   width: 100%;
   height: 10rem;
@@ -175,7 +185,7 @@ function setSetting(DIFF, BOXS, DUR) {
 }
 
 .title {
-  margin: 2rem;
+  margin: 4rem 0 1rem;
 }
 
 .title-head {
@@ -184,7 +194,6 @@ function setSetting(DIFF, BOXS, DUR) {
   line-height: 17px;
 }
 .title-game {
-  /* margin-bottom: 4rem; */
   font-family: "Holen Vintage";
   font-size: 3rem;
 }
@@ -201,8 +210,10 @@ function setSetting(DIFF, BOXS, DUR) {
 }
 
 .list-menu {
+  border-radius: 10px;
   width: 45rem;
   height: fit-content;
+  padding: 1.5rem;
   background: var(--primary-light);
 }
 </style>

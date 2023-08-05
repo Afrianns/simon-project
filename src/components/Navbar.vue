@@ -1,7 +1,7 @@
 <script setup>
 import { ref, watch } from "vue";
-let propsData = defineProps(["health", "resume", "pause"]);
-let pauseEmit = defineEmits(["pause", "timeout"]);
+let propsData = defineProps(["health", "resume", "pause", "duration", "sound"]);
+let pauseEmit = defineEmits(["pause", "timeout", "setSound"]);
 let healthbars = ref([
   { id: 1, isEmpty: false },
   { id: 2, isEmpty: false },
@@ -10,7 +10,11 @@ let healthbars = ref([
 ]);
 let minutes = ref(0);
 let seconds = ref(0);
-let distance = ref(5);
+let distance = ref(1);
+let sound = ref(true);
+
+distance.value = propsData.duration;
+sound.value = propsData.sound;
 let pauseGame = ref(false);
 distance.value = distance.value * 60000;
 let isPause = ref(false);
@@ -77,6 +81,11 @@ function pause() {
   pauseGame.value = !pauseGame.value;
   pauseEmit("pause", true);
 }
+
+function ChangeSound() {
+  sound.value = !sound.value;
+  pauseEmit("setSound", sound.value);
+}
 </script>
 <template>
   <Transition mode="out-in">
@@ -101,15 +110,36 @@ function pause() {
           }}
         </h2>
       </div>
-      <div class="pause" @click.prevent="pause()">
-        <h2>Pause</h2>
-        <img
-          src="../assets/icons/pause.svg"
-          v-if="!propsData.pause"
-          width="35"
-          alt="pause icon"
-        />
-        <img src="../assets/icons/play.svg" v-else width="35" alt="play icon" />
+      <div class="control-wrapper">
+        <div class="sound" @click="ChangeSound()">
+          <img
+            src="../assets/icons/sound-on.svg"
+            v-if="sound"
+            width="30"
+            alt="pause icon"
+          />
+          <img
+            src="../assets/icons/sound-off.svg"
+            width="30"
+            v-else
+            alt="play icon"
+          />
+        </div>
+        <div class="pause" @click.prevent="pause()">
+          <h2>Pause</h2>
+          <img
+            src="../assets/icons/pause.svg"
+            v-if="!propsData.pause"
+            width="35"
+            alt="pause icon"
+          />
+          <img
+            src="../assets/icons/play.svg"
+            v-else
+            width="35"
+            alt="play icon"
+          />
+        </div>
       </div>
     </div>
   </Transition>
@@ -118,9 +148,6 @@ function pause() {
 
 <style scoped>
 .nav {
-  /* position: absolute;
-  top: 0; */
-  /* width: 100%; */
   margin: 2rem 0;
   display: flex;
   justify-content: space-around;
@@ -129,12 +156,14 @@ function pause() {
 }
 
 .healthbar,
-.pause {
+.pause,
+.control-wrapper {
   display: flex;
   align-items: center;
 }
 
-.pause {
+.pause,
+.sound {
   cursor: pointer;
 }
 .healthbar {
@@ -145,6 +174,7 @@ function pause() {
   font-size: 0.75rem;
   padding-bottom: 0.5rem;
 }
+
 .bar {
   gap: 2px;
   display: flex;
@@ -160,5 +190,9 @@ function pause() {
 }
 .hp {
   text-align: left;
+}
+
+.control-wrapper {
+  gap: 20px;
 }
 </style>

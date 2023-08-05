@@ -9,7 +9,7 @@ let DURATIONS = ref(0);
 
 DIFFICULTY.value = initial.value[0];
 SUMBOXS.value = initial.value[1];
-DURATIONS.value = 1;
+DURATIONS.value = initial.value[2];
 
 function changeSetting(id, val) {
   switch (id) {
@@ -124,6 +124,7 @@ let sendVal = () => {
   list-style: none;
   column-gap: 20px;
   text-transform: uppercase;
+  color: rgb(180, 154, 122);
 }
 
 .sub-list > li {
@@ -137,5 +138,6 @@ let sendVal = () => {
 
 .active {
   background: var(--golden);
+  color: var(--primary-light);
 }
 </style>

@@ -16,7 +16,7 @@ let initialItems = [
 let itemlen = ref(4);
 let repeat = ref(5);
 
-let start = defineProps(["start", "pause", "SetValue"]);
+let start = defineProps(["start", "pause", "SetValue", "timeout", "sound"]);
 let changeState = defineEmits(["wrongStep", "levelUp"]);
 
 // set Setting Value
@@ -68,8 +68,12 @@ function randomPattern() {
 
 function repeatTask(i) {
   id.value = setTimeout(() => {
-    drawPattern(i);
-  }, 2000 * i);
+    if (!start.timeout) {
+      drawPattern(i);
+      playAudio("sound/tap.wav");
+      i = 0;
+    }
+  }, 1500 * i);
 }
 
 function drawPattern(i) {
@@ -81,6 +85,7 @@ function drawPattern(i) {
   for (const item of items) {
     item["pattern"] = false;
   }
+
   setTimeout(() => {
     for (const item of items) {
       if (patternID.value[i] == item["id"]) {
@@ -90,7 +95,7 @@ function drawPattern(i) {
         item["pattern"] = false;
       }
     }
-  }, 10);
+  }, 100);
 }
 
 let sorted = 0;
@@ -100,6 +105,7 @@ function boxClick(id) {
   if (healthNumber.value == 0 || !isClickable.value) {
     return;
   }
+  playAudio("sound/user-tap.mp3");
   for (const i in patternID.value) {
     if (i == sorted) {
       if (patternID.value[i] == id) {
@@ -124,6 +130,13 @@ function boxClick(id) {
       }
       break;
     }
+  }
+}
+
+function playAudio(typeSound) {
+  let audio = new Audio(typeSound);
+  if (start.sound) {
+    audio.play();
   }
 }
 
@@ -181,7 +194,8 @@ function callStart() {
           }"
           :style="{ background: item.color }"
           @click.prevent="boxClick(item.id)"
-        ></span>
+          >{{ item["pattern"] }}
+        </span>
       </div>
     </Transition>
   </div>
