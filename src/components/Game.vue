@@ -194,7 +194,7 @@ function callStart() {
           }"
           :style="{ background: item.color }"
           @click.prevent="boxClick(item.id)"
-          >{{ item["pattern"] }}
+        >
         </span>
       </div>
     </Transition>
