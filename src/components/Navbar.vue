@@ -1,7 +1,7 @@
 <script setup>
 import { ref, watch } from "vue";
-let propsData = defineProps(["health", "resume"]);
-let pauseEmit = defineEmits(["pause"]);
+let propsData = defineProps(["health", "resume", "pause"]);
+let pauseEmit = defineEmits(["pause", "timeout"]);
 let healthbars = ref([
   { id: 1, isEmpty: false },
   { id: 2, isEmpty: false },
@@ -19,7 +19,6 @@ let isPause = ref(false);
 watch(
   () => propsData.health,
   (a) => {
-    console.log(a);
     if (a >= 0) {
       healthbars.value.forEach((healthbar, idx) => {
         if (idx == a) {
@@ -69,13 +68,14 @@ watch(
 
 // function clear interval when time hit 00:00
 function breakInteval() {
+  pauseEmit("timeout");
   clearInterval(idx);
 }
 
 function pause() {
   isPause.value = !isPause.value;
   pauseGame.value = !pauseGame.value;
-  pauseEmit("pause");
+  pauseEmit("pause", true);
 }
 </script>
 <template>
@@ -105,7 +105,7 @@ function pause() {
         <h2>Pause</h2>
         <img
           src="../assets/icons/pause.svg"
-          v-if="!pauseGame"
+          v-if="!propsData.pause"
           width="35"
           alt="pause icon"
         />
@@ -118,10 +118,10 @@ function pause() {
 
 <style scoped>
 .nav {
-  position: absolute;
-  top: 0;
-  width: 100%;
-  margin: 1rem 0;
+  /* position: absolute;
+  top: 0; */
+  /* width: 100%; */
+  margin: 2rem 0;
   display: flex;
   justify-content: space-around;
   align-items: center;

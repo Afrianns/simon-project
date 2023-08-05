@@ -14,8 +14,9 @@ let level = defineProps(["level"]);
 
 <style scoped>
 footer {
-  position: absolute;
-  bottom: 0;
-  margin: 1rem 0;
+  width: fit-content;
+  /* position: absolute;
+  bottom: 0; */
+  margin: 1rem auto;
 }
 </style>

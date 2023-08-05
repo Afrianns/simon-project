@@ -1,33 +1,36 @@
 <script setup>
-let propsData = defineEmits(["propParam"]);
+// let propsData = defineEmits(["propParam"]);
 
-function backToMenu() {
-  propsData("propParam");
-}
+// function backToMenu() {
+//   propsData("propParam");
+// }
 </script>
 <template>
+  <div class="backdrop"></div>
   <div class="menu">
-    <ul class="list-menu">
-      <li @click="propsData('propParam', 1)">RESUME</li>
-      <li @click="propsData('propParam', 2)">MENU</li>
-      <li @click="propsData('propParam', 3)">RESTART</li>
-      <li>ABOUT</li>
-    </ul>
+    <slot></slot>
   </div>
 </template>
 
 <style scoped>
-.menu {
+.backdrop {
   position: absolute;
   z-index: 1;
-  background: var(--primary-light);
-  width: 5vw;
-  height: fit-content;
-  box-shadow: 5px 12px 25px #a7967c1f;
-  padding: 2rem;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  opacity: 0.5;
+  background-color: #f2ead3;
 }
-
-/* .list-menu > * {
-  margin-bottom: 2.5rem;
-} */
+.menu {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  z-index: 2;
+  box-shadow: 5px 12px 25px #a7967c1f;
+}
 </style>

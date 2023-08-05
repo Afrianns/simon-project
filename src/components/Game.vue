@@ -1,11 +1,8 @@
 <script setup>
-import { ref, watch, onMounted, computed, reactive } from "vue";
+import { ref, watch, onMounted, computed, reactive, onBeforeMount } from "vue";
 import Swal from "sweetalert2";
 
-let start = defineProps(["start"]);
-let changeState = defineEmits(["wrongStep", "levelUp"]);
-
-let items = reactive([
+let initialItems = [
   { id: 1, color: "#ADE4DB", pattern: false },
   { id: 2, color: "#6DA9E4", pattern: false },
   { id: 3, color: "#F6BA6F", pattern: false },
@@ -14,25 +11,45 @@ let items = reactive([
   { id: 6, color: "#E96479", pattern: false },
   { id: 7, color: "#CD5888", pattern: false },
   { id: 8, color: "#C3ACD0", pattern: false },
-]);
+];
+
+let itemlen = ref(4);
+let repeat = ref(5);
+
+let start = defineProps(["start", "pause", "SetValue"]);
+let changeState = defineEmits(["wrongStep", "levelUp"]);
+
+// set Setting Value
+repeat.value = start.SetValue[0];
+itemlen.value = start.SetValue[1];
+
+let items = reactive(initialItems.filter((a) => a.id <= itemlen.value));
 
 let val = ref();
-let repeat = ref(2);
 let patternID = ref([]);
 let wrongStep = ref(false);
 let correctStep = ref(false);
-let healthNumber = ref(4);
+let healthNumber = ref();
 let level = ref(1);
 let isClickable = ref(false);
-
+let id = ref("");
 let idx = ref("");
 
-function randomPattern() {
-  for (let i = 0; i <= repeat.value - 1; i++) {
-    val.value = Math.ceil(Math.random() * items.length);
-    patternID.value.push(val.value);
+healthNumber.value = 4;
+
+watch(
+  () => start.pause,
+  (a) => {
+    if (start.pause) {
+      console.log("seek", id.value);
+      clearTimeout(id.value);
+    }
+    console.log(start.pause, id.value);
+    if (!a && !isClickable.value) {
+      callStart();
+    }
   }
-}
+);
 
 function startGame() {
   console.log(patternID.value, patternID.value.length);
@@ -42,8 +59,15 @@ function startGame() {
   }
 }
 
+function randomPattern() {
+  for (let i = 0; i <= repeat.value - 1; i++) {
+    val.value = Math.ceil(Math.random() * items.length);
+    patternID.value.push(val.value);
+  }
+}
+
 function repeatTask(i) {
-  setTimeout(() => {
+  id.value = setTimeout(() => {
     drawPattern(i);
   }, 2000 * i);
 }
@@ -72,6 +96,7 @@ function drawPattern(i) {
 let sorted = 0;
 
 function boxClick(id) {
+  console.log("clicked");
   if (healthNumber.value == 0 || !isClickable.value) {
     return;
   }
@@ -105,7 +130,6 @@ function boxClick(id) {
 let delayAnim = (param) => {
   idx.value = setTimeout(() => {
     param.value = false;
-    // idx.value = "";
   }, 1000);
 };
 
@@ -125,6 +149,7 @@ function wrongStepAlert() {
 }
 
 if (start.start) {
+  console.log("is");
   randomPattern();
   callStart();
 }
@@ -147,7 +172,6 @@ function callStart() {
   >
     <Transition name="boxs">
       <div class="wrapper" v-if="start.start">
-        <!-- {{ start.start }} -->
         <span
           v-for="item in items"
           :key="item.id"
@@ -227,10 +251,12 @@ function callStart() {
 .h1 {
   color: #3c3c3c;
 }
+
 .wrapper {
   display: grid;
-  width: fit-content;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  flex: 1;
+  justify-content: center;
+  grid-template-columns: repeat(4, auto);
   gap: 2rem;
   margin: 1.5rem;
 }
